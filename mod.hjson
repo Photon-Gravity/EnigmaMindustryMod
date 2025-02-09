@@ -1,0 +1,23 @@
+#the mod name as displayed in-game
+displayName: "Enigma"
+
+#the internal name of your mod
+name: "enigma"
+
+#your name
+author: "Photon_Gravity"
+
+#the fully qualified main class of the mod
+main: "enigma.EniMain"
+
+#the mod description as seen in the mod dialog
+description: "Explore a new planet, Keslomin, research new technology and master exotic forms of energy."
+
+#the mod version
+version: 1.0
+
+#the minimum game build required to run this mod
+minGameVersion: 145
+
+#this is a java mod
+java: true
