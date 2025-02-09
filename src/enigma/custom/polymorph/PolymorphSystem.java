@@ -37,7 +37,7 @@ public class PolymorphSystem {
 
 		if(type != null){
 			distributePower(effectiveDelta(), type);
-			if(!type.unlocked()) type.unlock();
+			if(!type.unlocked() && provided() > 0) type.unlock();
 		}
 	}
 
