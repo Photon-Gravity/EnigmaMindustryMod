@@ -28,7 +28,7 @@ public class PolymorphSystemUpdater {
 		});
 
 		Events.on(EventType.BlockBuildEndEvent.class, event -> {
-			//too lazy to check everything properly when a block is destroyed so i just ditch the block's system and recalculate everything. It's not like this is done each frame, although when breaking a lot of nodes this could get problematic.
+			//too lazy to check everything properly when a block is destroyed so I just ditch the block's system and recalculate everything. It's not like this is done each frame, although when breaking a lot of nodes this could get problematic.
 			if(event.tile.build instanceof PolymorphUtilizer util && util.getSystem() != null){
 				util.getSystem().delete();
 
@@ -46,6 +46,9 @@ public class PolymorphSystemUpdater {
 	}
 
 	public static void recalculateSystems(){
+		for (PolymorphSystem s: systems) {
+			s.delete();
+		}
 		//search through every tile and if it has polymorph and its system is null it gets its own system, which is fully propagated though the network. Most of it is redundancy to make sure there aren't wierd polymorph warp glitches.
 		Vars.world.tiles.eachTile(tile -> {
 			if(tile.build instanceof PolymorphNode.PolymorphNodeBuild u && u.getSystem() == null){

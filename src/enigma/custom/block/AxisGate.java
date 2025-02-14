@@ -3,12 +3,9 @@ package enigma.custom.block;
 import arc.Core;
 import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.TextureRegion;
-import arc.math.geom.Geometry;
 import arc.util.Eachable;
 import mindustry.entities.units.BuildPlan;
 import mindustry.gen.Building;
-import mindustry.graphics.Drawf;
-import mindustry.graphics.Pal;
 import mindustry.type.Item;
 import mindustry.world.Block;
 

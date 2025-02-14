@@ -233,11 +233,7 @@ public class PolymorphNode extends Block {
 				!(
 						other instanceof PolymorphNodeBuild obuild &&
 						obuild.links.size >= ((PolymorphNode)obuild.block).linkCount
-				) &&
-				!Structs.contains(Edges.getEdges(size), p -> { //do not link to adjacent buildings
-					var t = world.tile(tile.x + p.x, tile.y + p.y);
-					return t != null && t.build == other;
-				});
+				);
 
 		tempBuilds.clear();
 

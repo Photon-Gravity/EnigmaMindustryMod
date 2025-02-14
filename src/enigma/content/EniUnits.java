@@ -66,7 +66,7 @@ public class EniUnits {
 			drag = 0.12f;
 			hitSize = 53 * px;
 			armor = 2;
-			health = 500;
+			health = 700;
 			accel = 0.2f;
 			faceTarget = false;
 			rotateSpeed = 4f;

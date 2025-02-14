@@ -3,6 +3,7 @@ package enigma.content;
 import arc.Core;
 import arc.graphics.g2d.TextureRegion;
 import arc.math.Interp;
+import arc.struct.Seq;
 import enigma.custom.block.*;
 import enigma.custom.polymorph.PolymorphPowerStack;
 import enigma.graphics.EniPal;
@@ -14,15 +15,17 @@ import mindustry.graphics.CacheLayer;
 import mindustry.type.Category;
 import mindustry.type.ItemStack;
 import mindustry.world.Block;
+import mindustry.world.blocks.defense.AutoDoor;
 import mindustry.world.blocks.defense.Wall;
-import mindustry.world.blocks.distribution.Conveyor;
 import mindustry.world.blocks.environment.*;
 import mindustry.world.blocks.storage.CoreBlock;
 import mindustry.world.draw.*;
 import mindustry.world.meta.Attribute;
 
 import static enigma.content.EniItems.*;
+import static enigma.content.EniPolymorphTypes.ion;
 import static enigma.content.EniPolymorphTypes.therma;
+import static enigma.content.EniUnits.scald;
 import static enigma.util.Consts.px;
 import static enigma.util.Consts.s;
 import static mindustry.type.ItemStack.with;
@@ -38,11 +41,13 @@ public class EniBlocks {
 		incandescence,
 
 		suctionDrill,
-		encasedConveyor, axisGate,
+		encasedConveyor, axisGate, thermobaricLauncher,
 
 		polymorphNode, polymorphEnforcer, geothermalCollector,
-		molybdenumWall, largeMolybdenumWall, thermoacousticSonar,
+		molybdenumWall, largeMolybdenumWall, gateway, thermoacousticSonar,
 		thermalCrystallizer,
+
+		replicator,
 		coreModule;
 	public static void load(){
 		//environment
@@ -317,6 +322,20 @@ public class EniBlocks {
 			requirements(Category.distribution, with(molybdenum, 5));
 			researchCost = with(molybdenum, 40);
 		}};
+		thermobaricLauncher = new PolymorphMassDriver("thermobaric-launcher"){{
+			size = 2;
+			health = 1000;
+			requirements(Category.distribution, with(molybdenum, 100, irtran, 10));
+			researchCost = with(molybdenum, 250, irtran, 15);
+
+			itemCapacity = 35;
+			reload = 5 * s;
+			consumed = new PolymorphPowerStack(therma, 12.5f/s);
+			range = 20 * 32 * px;
+
+			squareSprite = false;
+			outlineColor = EniPal.outline;
+		}};
 
 		//power
 		polymorphNode = new PolymorphNode("polymorph-node"){{
@@ -367,7 +386,12 @@ public class EniBlocks {
 			requirements(Category.defense, with(molybdenum, 24));
 			researchCost = with(molybdenum, 512);
 		}};
-
+		gateway = new AutoDoor("gateway"){{
+			size = 2;
+			health = 750 * 4;
+			requirements(Category.defense, with(molybdenum, 18, irtran, 6));
+			researchCost = with(molybdenum, 256, irtran, 64);
+		}};
 		thermoacousticSonar = new PolymorphRadar("thermoacoustic-sonar"){{
 			size = 1;
 			health = 500;
@@ -400,6 +424,20 @@ public class EniBlocks {
 					new DrawGlowRegion(){{ color = therma.color; suffix = "-glow"; }},
 					new DrawDefault()
 			);
+		}};
+		//units
+		replicator = new PolymorphFabricator("replicator"){{
+			size = 3;
+			health = 1500;
+			requirements(Category.units, with(molybdenum, 105, irtran, 35));
+			researchCost = with(molybdenum, 500, irtran, 100);
+
+			consumed = new PolymorphPowerStack(therma, 175/s);
+			plans = Seq.with(
+				new UnitPlan(scald, 30 * s, with(molybdenum, 35, irtran, 10))
+			);
+
+			squareSprite = false;
 		}};
 
 		//effect
