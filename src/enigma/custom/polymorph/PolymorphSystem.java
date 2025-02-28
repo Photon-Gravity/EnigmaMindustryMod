@@ -1,138 +1,144 @@
 package enigma.custom.polymorph;
 
 import arc.struct.Seq;
-import enigma.custom.polymorph.interfaces.PolymorphConsumer;
-import enigma.custom.polymorph.interfaces.PolymorphProvider;
-import enigma.custom.polymorph.interfaces.PolymorphStorage;
-import enigma.custom.polymorph.interfaces.PolymorphUtilizer;
+import arc.util.Log;
 import mindustry.Vars;
-import mindustry.gen.Building;
-
-import java.util.ArrayList;
 
 public class PolymorphSystem {
-	public Seq<Integer> providers = new Seq<>();
-	public Seq<Integer> storage = new Seq<>();
-	public Seq<Integer> consumers = new Seq<>();
-	public Seq<Integer> all = new Seq<>();
-	public PolymorphPowerType type;
 
-	public int ID;
+	Seq<Integer> members;
 
-	public PolymorphSystem(int ID){
-		this.ID = ID;
+	PolymorphPowerType enforcedType;
+
+	static int lastID = 0;
+
+	public int id;
+
+	public PolymorphSystem(){
+		members = new Seq<>();
+		id = lastID++;
 	}
-	//updating
-	public void delete(){
-		for(int b : all){
-			if(Vars.world.build(b) instanceof PolymorphUtilizer u) u.setSystem(null);
-			else all.remove((Integer)b);
-		}
-	}
+
 
 	public void update(){
-		if(type == null) {
-			determineType();
-		}
+		enforcedType = getEnforced();
 
-		if(type != null){
-			distributePower(effectiveDelta(), type);
-			if(!type.unlocked() && provided() > 0) type.unlock();
-		}
+		if (Vars.state.isCampaign() && enforcedType != null && !enforcedType.unlocked()) enforcedType.unlock();
+
+		storePower(batteryDelta());
+
+		validateMembers();
+
+//		if(members.size == 0){
+//			delete();
+//		}
 	}
 
-	public void determineType(){
-		for(int b : all){
-			if(Vars.world.build(b) instanceof PolymorphUtilizer u) {
-				if(u.getEnforcedPowerType() != null) {
-					type = u.getEnforcedPowerType();
-					break;
-				}
-			} else all.remove((Integer)b);
-		}
-	}
-
-	public void distributePower(float power, PolymorphPowerType t){
-		for(int b: storage){
-			if(Vars.world.build(b) instanceof PolymorphStorage u) {
-				float powerToStore = power > 0 ? Math.min(u.getStorable(t) - u.getStored(t), power) : Math.max(u.getStored(t), power);
-
-				power -= powerToStore;
-				u.storePolymorph(powerToStore, t);
+	public void validateMembers(){
+		for(int member : members){
+			if(Vars.world.build(member) instanceof IPolymorphUtilizer util && util.getModule() != null){
+				util.getModule().validate();
+			} else {
+				members.remove((Integer)member);
 			}
-			else all.remove((Integer)b);
 		}
 	}
 
-	public void append(Building b){
-		if(b instanceof PolymorphUtilizer){
-			all.add(b.pos());
-			if(b instanceof PolymorphProvider) providers.add(b.pos());
-			if(b instanceof PolymorphStorage) storage.add(b.pos());
-			if(b instanceof PolymorphConsumer) consumers.add(b.pos());
+	public void delete(){
+		for(int member : members){
+			if(Vars.world.build(member) instanceof IPolymorphUtilizer util){
+				util.getModule().system = null;
+			}
 		}
+
+		PolymorphUpdater.systems.remove(this);
+	}
+	public PolymorphPowerType getEnforced(){
+		for(int member : members){
+			if(Vars.world.build(member) instanceof IPolymorphUtilizer u && u.enforced() != null){
+				return u.enforced();
+			}
+		}
+		return null;
 	}
 
-	//maths
-	public float provided(){
-		float totalProvided = 0;
 
-
-		for(int b : providers){
-			if(Vars.world.build(b) instanceof PolymorphProvider u){
-				totalProvided += u.getProvided(type);
-			} else all.remove((Integer)b);
-		}
-		return totalProvided;
+	public float satisfaction(){
+		return Math.min(Math.max((produced() + stored()) / (consumed() + 0.0001f), 0), 1);
+	}
+	public float balance(){
+		return produced() - consumed();
 	}
 
-	public float stored(){
-		float totalStored = 0;
-		for(int b : storage){
-			if(Vars.world.build(b) instanceof PolymorphStorage u){
-				totalStored += u.getStored(type);
-			} else all.remove((Integer)b);
-		}
-		return totalStored;
-	}
+	public float produced(){
+		float sum = 0;
 
-	public float storable(){
-		float totalStorable = 0;
-		for(int b : storage){
-			if(Vars.world.build(b) instanceof PolymorphStorage u){
-				totalStorable += u.getStorable(type);
-			} else all.remove((Integer)b);
-
+		for(int member : members){
+			if(Vars.world.build(member) instanceof IPolymorphUtilizer u){
+				sum += u.produced(enforcedType);
+			}
 		}
-		return totalStorable;
+
+		return sum;
 	}
 
 	public float consumed(){
-		float totalConsumed = 0;
-		for(int b : consumers){
-			if(Vars.world.build(b) instanceof PolymorphConsumer u){
-				totalConsumed += u.getConsumed(type);
-			} else all.remove((Integer)b);
+		float sum = 0;
+
+		for(int member : members){
+			if(Vars.world.build(member) instanceof IPolymorphUtilizer u){
+				sum += u.consumed(enforcedType);
+			}
 		}
-		return totalConsumed;
+
+		return sum;
 	}
 
-	public float satisfaction(){
-		return Math.min(Math.max(provided()/(consumed() + stored()), 0), 1f);
-	}
-	public float balance(){
-		return provided() - consumed();
+	public float storable(){
+		float sum = 0;
+
+		for(int member : members){
+			if(Vars.world.build(member) instanceof IPolymorphUtilizer u){
+				sum += u.storable(enforcedType);
+			}
+		}
+
+		return sum;
 	}
 
-	public float delta() {
-		return provided() - consumed();
+	public float stored(){
+		float sum = 0;
+
+		for(int member : members){
+			if(Vars.world.build(member) instanceof IPolymorphUtilizer u){
+				sum += u.stored(enforcedType);
+			}
+		}
+
+		return sum;
+	}
+	public float batteryDelta(){
+		return Math.min(Math.max(produced() - consumed(), 0), storable() - stored());
 	}
 
-	public float effectiveDelta(){
-		return delta() > 0 ? Math.min(delta(), storable() - stored()) : Math.max(delta(), stored());
-	}
+	public void storePower(float power){
 
-	public boolean contains(int pos){
-		return all.contains(pos);
+		for(int member : members){
+			if(Vars.world.build(member) instanceof IPolymorphUtilizer u){
+				if(power > 0){
+					float deposited = Math.min(u.storable(enforcedType) - u.stored(enforcedType), power);
+
+					power -= deposited;
+					u.store(new PolymorphPowerStack(enforcedType, deposited));
+					if(power == 0) break;
+				} else {
+					float deposited = Math.max(-u.stored(enforcedType), power);
+
+					power -= deposited;
+					u.store(new PolymorphPowerStack(enforcedType, deposited));
+					if(power == 0) break;
+				}
+			}
+		}
 	}
 }

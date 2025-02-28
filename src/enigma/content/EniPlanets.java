@@ -22,16 +22,20 @@ public class EniPlanets {
 	public static Planet tarcomron, keslomin;
 
 	public static void load(){
-		tarcomron = new Planet("tarcomron", null, 2.5f){{
+		tarcomron = new Planet("tarcomron", null, 10f){{
 			bloom = true;
 			accessible = false;
 
+			orbitSpacing = 36f;
+
 			meshLoader = () -> new SunMesh(
-					this, 4,
-					5, 0.3, 1.7, 1.2, 1,
+					this, 6,
+					5, 0.3, 4.5f, 1.2, 1,
 					1.1f,
 					EniPal.redHotDark,
+					EniPal.redHotDark.cpy().mul(0.5f).add(EniPal.redHot.cpy().mul(0.5f)),
 					EniPal.redHot,
+					EniPal.redHotLight.cpy().mul(0.5f).add(EniPal.redHot.cpy().mul(0.5f)),
 					EniPal.redHotLight
 			);
 		}};
@@ -78,7 +82,6 @@ public class EniPlanets {
 			startSector = 81;
 			atmosphereRadIn = 0.02f;
 			atmosphereRadOut = 0.3f;
-			orbitSpacing = 2f;
 			totalRadius += 2.6f;
 			lightSrcTo = 0.5f;
 			lightDstFrom = 0.2f;

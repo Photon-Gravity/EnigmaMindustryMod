@@ -10,12 +10,9 @@ import arc.math.Interp;
 import arc.math.Mathf;
 import arc.struct.Seq;
 import arc.util.Tmp;
-import enigma.custom.polymorph.PolymorphPowerStack;
-import enigma.custom.polymorph.PolymorphPowerType;
-import enigma.custom.polymorph.PolymorphSystem;
-import enigma.custom.polymorph.interfaces.PolymorphConsumer;
-import enigma.custom.polymorph.interfaces.PolymorphUtilizer;
+import enigma.custom.polymorph.*;
 import enigma.custom.stats.EniStatVal;
+import mindustry.core.UI;
 import mindustry.gen.Building;
 import mindustry.graphics.Drawf;
 import mindustry.graphics.Layer;
@@ -28,20 +25,10 @@ public class PolymorphBurstDrill extends BurstDrill {
 
 	TextureRegion[] arrowRegions, arrowBlurRegions;
 
-	public PolymorphPowerStack[] consumedPower;
+	public PolymorphPowerStack consumed;
 
 	public PolymorphBurstDrill(String name) {
 		super(name);
-	}
-
-	@Override
-	public void setStats() {
-		super.setStats();
-
-		stats.remove(Stat.powerUse);
-		if(consumedPower != null){
-			stats.add(Stat.input, EniStatVal.powerTypes(true, consumedPower));
-		}
 	}
 
 	@Override
@@ -49,18 +36,25 @@ public class PolymorphBurstDrill extends BurstDrill {
 		super.setBars();
 		addBar("power", makePowerBalance());
 	}
-
 	public static Func<Building, Bar> makePowerBalance(){
 		return entity -> new Bar(() ->
 				Core.bundle.format(
 						"bar.polymorphcons", //very dense notation that amounts to nullproofing
-						((PolymorphUtilizer)entity).getSystem() != null ? (((PolymorphUtilizer)entity).getSystem().type != null ? ((PolymorphUtilizer)entity).getSystem().type.localizedName : "N/A") : "N/A"
+						((IPolymorphUtilizer)entity).getModule() != null && ((IPolymorphUtilizer)entity).getModule().getEnforced() != null ? ((IPolymorphUtilizer)entity).getModule().getEnforced().localizedName : "N/A"
 				),
-				() -> ((PolymorphUtilizer)entity).getSystem() != null ? (((PolymorphUtilizer)entity).getSystem().type != null ? ((PolymorphUtilizer)entity).getSystem().type.color : Color.gray) : Color.gray,
-				() -> Mathf.clamp(
-						((PolymorphUtilizer)entity).getSystem() != null ? ((PolymorphUtilizer)entity).getSystem().satisfaction() : 0
-				)
+				() -> ((IPolymorphUtilizer)entity).getModule() != null && ((IPolymorphUtilizer)entity).getModule().getEnforced() != null ? ((IPolymorphUtilizer)entity).getModule().getEnforced().color : Color.gray,
+				() -> ((IPolymorphUtilizer)entity).getModule() != null && ((IPolymorphUtilizer)entity).getModule().system != null ? ((IPolymorphUtilizer)entity).getModule().system.satisfaction() : 0
 		);
+	}
+
+	@Override
+	public void setStats() {
+		super.setStats();
+
+		stats.remove(Stat.powerUse);
+		if(consumed != null){
+			stats.add(Stat.input, EniStatVal.power(consumed, true));
+		}
 	}
 
 	@Override
@@ -75,14 +69,25 @@ public class PolymorphBurstDrill extends BurstDrill {
 		}
 	}
 
-	public class StaticBurstDrillBuild extends BurstDrillBuild implements PolymorphUtilizer, PolymorphConsumer {
+	public class StaticBurstDrillBuild extends BurstDrillBuild implements IPolymorphUtilizer {
 
-		PolymorphSystem system;
+		PolymorphModule module;
+
+		@Override
+		public void update() {
+			super.update();
+
+			if(module == null){
+				module = new PolymorphModule(pos());
+				PolymorphUpdater.makeSystem(pos());
+			}
+		}
+
 
 		@Override
 		public void updateEfficiencyMultiplier() {
 			super.updateEfficiencyMultiplier();
-			efficiency *= system != null ? system.satisfaction() : 0;
+			efficiency *= module != null ? module.satisfaction() : 0;
 		}
 
 		@Override
@@ -121,54 +126,47 @@ public class PolymorphBurstDrill extends BurstDrill {
 					Draw.alpha(Mathf.pow(a, 10f));
 					Draw.rect(arrowBlurRegions[j], x, y);
 					Draw.blend();
-			}}
+				}}
 			Draw.color();
 
 			if(glowRegion.found()){
 				Drawf.additive(glowRegion, Tmp.c2.set(glowColor).a(Mathf.pow(fract, 3f) * glowColor.a), x, y);
 			}
 		}
-		@Override
-		public float getConsumed(PolymorphPowerType type) {
-			if(!shouldConsume()) return 0;
 
-			for(PolymorphPowerStack stack : consumedPower){
-				if(stack.type == type){
-					return stack.quantity;
-				}
-			}
+		@Override
+		public PolymorphModule getModule() {
+			return module;
+		}
+
+		@Override
+		public PolymorphPowerType enforced() {
+			return consumed.type;
+		}
+
+		@Override
+		public float produced(PolymorphPowerType ofType) {
 			return 0;
 		}
 
 		@Override
-		public boolean consumesType(PolymorphPowerType type) {
-			for(PolymorphPowerStack stack : consumedPower){
-				if(stack.type == type){
-					return true;
-				}
-			}
-			return false;
+		public float consumed(PolymorphPowerType ofType) {
+			return ofType == consumed.type ? consumed.quantity : 0;
 		}
 
 		@Override
-		public void setSystem(PolymorphSystem newSystem) {
-			this.system = newSystem;
+		public float storable(PolymorphPowerType ofType) {
+			return 0;
 		}
 
 		@Override
-		public PolymorphSystem getSystem() {
-			return system;
+		public float stored(PolymorphPowerType ofType) {
+			return 0;
 		}
 
 		@Override
-		public PolymorphPowerType getEnforcedPowerType() {
-			if(consumedPower.length == 1) return consumedPower[0].type;
-			return null;
-		}
+		public void store(PolymorphPowerStack stack) {
 
-		@Override
-		public void addToSystem(PolymorphSystem s, Seq<Integer> scheduled) {
-			this.system = s;
 		}
 	}
 }

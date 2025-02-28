@@ -6,7 +6,7 @@ import enigma.graphics.EniPal;
 import mindustry.type.Item;
 
 public class EniItems {
-	public static Item molybdenum, periclase, irtran;
+	public static Item molybdenum, periclase, irtran, ruthenium, fulgoriteFiber, caesium;
 
 	public static Seq<Item> keslominItems = new Seq<>();
 
@@ -14,7 +14,14 @@ public class EniItems {
 		molybdenum = new Item("molybdenum", Color.valueOf("868c7a"));
 		periclase = new Item("periclase", Color.valueOf("baa2b3"));
 		irtran = new Item("irtran", EniPal.irtran);
+		ruthenium = new Item("ruthenium", Color.valueOf("733a4f"));
+		fulgoriteFiber = new Item("fulgorite-fiber", Color.valueOf("2b1d1d"));
+		caesium = new Item("caesium", Color.valueOf("733a4f"));
 
-		keslominItems.addAll(molybdenum, periclase, irtran);
+		ruthenium.hidden = true;
+		fulgoriteFiber.hidden = true;
+		caesium.hidden = true;
+
+		keslominItems.addAll(molybdenum, periclase, irtran, ruthenium, fulgoriteFiber, caesium);
 	}
 }
