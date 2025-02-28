@@ -7,8 +7,10 @@ import mindustry.type.Item;
 
 import static enigma.content.EniBlocks.*;
 import static enigma.content.EniItems.*;
+import static enigma.content.EniLiquids.*;
 import static enigma.content.EniPolymorphTypes.*;
-import static enigma.content.EniUnits.scald;
+import static enigma.content.EniSectors.*;
+import static enigma.content.EniUnits.*;
 import static mindustry.Vars.content;
 import static mindustry.content.TechTree.*;
 import static mindustry.type.ItemStack.with;
@@ -33,12 +35,13 @@ public class KeslominTechTree {
 				});
 			});
 
-			node(encasedConveyor, Seq.with(new Objectives.Research(suctionDrill)), () -> {
+			node(encasedConveyor, Seq.with(new Objectives.Research(vacuumDrill)), () -> {
 				node(axisGate, () -> {});
+				node(filter, () -> {});
 				node(thermobaricLauncher, () -> {});
 			});
 
-			node(suctionDrill, Seq.with(new Objectives.Research(geothermalCollector)), () -> {});
+			node(vacuumDrill, Seq.with(new Objectives.Research(geothermalCollector)), () -> {});
 
 			node(incandescence, Seq.with(new Objectives.Research(thermoacousticSonar)), () -> {
 				node(molybdenumWall, () -> {
@@ -55,9 +58,27 @@ public class KeslominTechTree {
 
 			nodeProduce(molybdenum, () ->{
 				nodeProduce(periclase, () ->{
-					nodeProduce(irtran, () ->{});
+					nodeProduce(irtran, () ->{
+						nodeProduce(ruthenium, () ->{
+							nodeProduce(fulgoriteFiber, () ->{});
+							nodeProduce(caesium, () ->{});
+							nodeProduce(causticAmmonia, () ->{
+								nodeProduce(distilledAmmonia, () ->{
+									nodeProduce(deuteride, () ->{});
+								});
+							});
+
+						});
+
+					});
 				});
-				nodeProduce(therma, () ->{});
+				nodeProduce(therma, () ->{
+					nodeProduce(ion, () ->{});
+				});
+			});
+
+			node(interphase, () -> {
+				node(scattershot, Seq.with(new Objectives.SectorComplete(interphase)), () -> {});
 			});
 		});
 	}

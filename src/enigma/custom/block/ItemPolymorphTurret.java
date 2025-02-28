@@ -3,20 +3,16 @@ package enigma.custom.block;
 import arc.Core;
 import arc.func.Func;
 import arc.graphics.Color;
-import arc.math.Mathf;
-import arc.struct.Seq;
-import enigma.custom.polymorph.PolymorphPowerStack;
-import enigma.custom.polymorph.PolymorphPowerType;
-import enigma.custom.polymorph.PolymorphSystem;
-import enigma.custom.polymorph.interfaces.PolymorphConsumer;
-import enigma.custom.polymorph.interfaces.PolymorphUtilizer;
+import enigma.custom.polymorph.*;
 import enigma.custom.stats.EniStatVal;
 import enigma.custom.stats.EniStats;
 import mindustry.gen.Building;
 import mindustry.ui.Bar;
 import mindustry.world.blocks.defense.turrets.ItemTurret;
+import mindustry.world.blocks.production.GenericCrafter;
 
 public class ItemPolymorphTurret extends ItemTurret {
+
 	public PolymorphPowerStack consumed;
 
 	public ItemPolymorphTurret(String name) {
@@ -39,52 +35,67 @@ public class ItemPolymorphTurret extends ItemTurret {
 		return entity -> new Bar(() ->
 				Core.bundle.format(
 						"bar.polymorphcons", //very dense notation that amounts to nullproofing
-						((PolymorphUtilizer)entity).getSystem() != null ? (((PolymorphUtilizer)entity).getSystem().type != null ? ((PolymorphUtilizer)entity).getSystem().type.localizedName : "N/A") : "N/A"
+						((IPolymorphUtilizer)entity).getModule() != null &&((IPolymorphUtilizer)entity).getModule().getEnforced() != null ? ((IPolymorphUtilizer)entity).getModule().getEnforced().localizedName : "N/A"
 				),
-				() -> ((PolymorphUtilizer)entity).getSystem() != null ? (((PolymorphUtilizer)entity).getSystem().type != null ? ((PolymorphUtilizer)entity).getSystem().type.color : Color.gray) : Color.gray,
-				() -> Mathf.clamp(
-						((PolymorphUtilizer)entity).getSystem() != null ? ((PolymorphUtilizer)entity).getSystem().satisfaction() : 0
-				)
+				() -> ((IPolymorphUtilizer)entity).getModule() != null &&((IPolymorphUtilizer)entity).getModule().getEnforced() != null ? ((IPolymorphUtilizer)entity).getModule().getEnforced().color : Color.gray,
+				() -> ((IPolymorphUtilizer)entity).getModule() != null && ((IPolymorphUtilizer)entity).getModule().system != null ? ((IPolymorphUtilizer)entity).getModule().system.satisfaction() : 0
 		);
 	}
 
-	public class ItemPolymorphTurretBuild extends ItemTurretBuild implements PolymorphUtilizer, PolymorphConsumer {
+	public class PolymorphThermalBuild extends ItemTurretBuild implements IPolymorphUtilizer {
 
-		PolymorphSystem system;
+		PolymorphModule module;
+
+		@Override
+		public void update() {
+			super.update();
+
+			if(module == null){
+				module = new PolymorphModule(pos());
+				PolymorphUpdater.makeSystem(pos());
+			}
+		}
+
 		@Override
 		public void updateEfficiencyMultiplier() {
 			super.updateEfficiencyMultiplier();
-			efficiency *= system != null ? system.satisfaction() : 0;
+
+			efficiency *= module != null ? module.satisfaction() : 0;
 		}
 
 		@Override
-		public float getConsumed(PolymorphPowerType type) {
-			return consumed.quantity * warmup();
+		public PolymorphModule getModule() {
+			return module;
 		}
 
 		@Override
-		public boolean consumesType(PolymorphPowerType type) {
-			return type == consumed.type;
-		}
-
-		@Override
-		public void setSystem(PolymorphSystem newSystem) {
-			this.system = newSystem;
-		}
-
-		@Override
-		public PolymorphSystem getSystem() {
-			return system;
-		}
-
-		@Override
-		public PolymorphPowerType getEnforcedPowerType() {
+		public PolymorphPowerType enforced() {
 			return consumed.type;
 		}
 
 		@Override
-		public void addToSystem(PolymorphSystem s, Seq<Integer> scheduled) {
-			setSystem(s);
+		public float produced(PolymorphPowerType ofType) {
+			return 0;
+		}
+
+		@Override
+		public float consumed(PolymorphPowerType ofType) {
+			return ofType == consumed.type ? consumed.quantity : 0;
+		}
+
+		@Override
+		public float storable(PolymorphPowerType ofType) {
+			return 0;
+		}
+
+		@Override
+		public float stored(PolymorphPowerType ofType) {
+			return 0;
+		}
+
+		@Override
+		public void store(PolymorphPowerStack stack) {
+
 		}
 	}
 }

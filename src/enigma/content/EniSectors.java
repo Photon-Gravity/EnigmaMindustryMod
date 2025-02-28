@@ -12,6 +12,7 @@ public class EniSectors {
 		//PlanetDialog.debugSelect = true     saved for reference
 		interphase = new SectorPreset("interphase", keslomin, 81);
 		interphase.captureWave = 12;
+		interphase.alwaysUnlocked = true;
 
 		scattershot = new SectorPreset("scattershot", keslomin, 65);
 	}

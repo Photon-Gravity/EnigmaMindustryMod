@@ -8,6 +8,7 @@ import mindustry.entities.units.BuildPlan;
 import mindustry.gen.Building;
 import mindustry.type.Item;
 import mindustry.world.Block;
+import mindustry.world.meta.BlockGroup;
 
 import static enigma.util.Consts.s;
 
@@ -25,6 +26,7 @@ public class AxisGate extends Block {
 
 		rotateDraw = false;
 		drawArrow = false;
+		group = BlockGroup.transportation;
 	}
 
 	@Override

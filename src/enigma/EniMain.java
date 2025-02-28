@@ -1,12 +1,9 @@
 package enigma;
 
-import arc.*;
-import arc.util.*;
+import arc.util.Log;
 import enigma.content.*;
-import enigma.custom.polymorph.PolymorphSystemUpdater;
-import mindustry.game.EventType.*;
-import mindustry.mod.*;
-import mindustry.ui.dialogs.*;
+import enigma.custom.polymorph.PolymorphUpdater;
+import mindustry.mod.Mod;
 
 public class EniMain extends Mod{
 
@@ -19,7 +16,7 @@ public class EniMain extends Mod{
     public void init() {
         super.init();
 
-        PolymorphSystemUpdater.init();
+        PolymorphUpdater.init();
     }
 
     @Override
@@ -29,6 +26,7 @@ public class EniMain extends Mod{
         EniPolymorphTypes.load();
 
         EniItems.load();
+        EniLiquids.load();
         EniUnits.load();
 
         EniBlocks.load();

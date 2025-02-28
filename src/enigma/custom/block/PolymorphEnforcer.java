@@ -7,9 +7,7 @@ import arc.scene.ui.layout.Table;
 import arc.struct.Seq;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
-import enigma.custom.polymorph.PolymorphPowerType;
-import enigma.custom.polymorph.PolymorphSystem;
-import enigma.custom.polymorph.interfaces.PolymorphUtilizer;
+import enigma.custom.polymorph.*;
 import mindustry.gen.Building;
 import mindustry.gen.Unit;
 import mindustry.world.Block;
@@ -40,10 +38,21 @@ public class PolymorphEnforcer extends Block {
 		filterRegion = Core.atlas.find(name+"-filter");
 	}
 
-	public class PolymorphEnforcerBuild extends Building implements PolymorphUtilizer {
+	public class PolymorphEnforcerBuild extends Building implements IPolymorphUtilizer {
 		PolymorphPowerType filter;
 
-		PolymorphSystem system;
+		PolymorphModule module;
+
+		@Override
+		public void update() {
+			super.update();
+
+			if(module == null){
+				module = new PolymorphModule(pos());
+				PolymorphUpdater.makeSystem(pos());
+			}
+		}
+
 
 		@Override
 		public void draw(){
@@ -94,23 +103,38 @@ public class PolymorphEnforcer extends Block {
 		}
 
 		@Override
-		public void setSystem(PolymorphSystem newSystem) {
-			this.system = newSystem;
+		public PolymorphModule getModule() {
+			return module;
 		}
 
 		@Override
-		public PolymorphSystem getSystem() {
-			return system;
-		}
-
-		@Override
-		public PolymorphPowerType getEnforcedPowerType() {
+		public PolymorphPowerType enforced() {
 			return filter;
 		}
 
 		@Override
-		public void addToSystem(PolymorphSystem s, Seq<Integer> scheduled) {
-			setSystem(s);
+		public float produced(PolymorphPowerType ofType) {
+			return 0;
+		}
+
+		@Override
+		public float consumed(PolymorphPowerType ofType) {
+			return 0;
+		}
+
+		@Override
+		public float storable(PolymorphPowerType ofType) {
+			return 0;
+		}
+
+		@Override
+		public float stored(PolymorphPowerType ofType) {
+			return 0;
+		}
+
+		@Override
+		public void store(PolymorphPowerStack stack) {
+
 		}
 	}
 }

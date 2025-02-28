@@ -5,6 +5,8 @@ import arc.graphics.g2d.TextureRegion;
 import arc.math.Interp;
 import arc.struct.Seq;
 import enigma.custom.block.*;
+import enigma.custom.block.PolymorphBurstDrill;
+import enigma.custom.block.PolymorphEnforcer;
 import enigma.custom.polymorph.PolymorphPowerStack;
 import enigma.graphics.EniPal;
 import mindustry.entities.bullet.ArtilleryBulletType;
@@ -21,9 +23,9 @@ import mindustry.world.blocks.environment.*;
 import mindustry.world.blocks.storage.CoreBlock;
 import mindustry.world.draw.*;
 import mindustry.world.meta.Attribute;
+import mindustry.world.meta.BuildVisibility;
 
 import static enigma.content.EniItems.*;
-import static enigma.content.EniPolymorphTypes.ion;
 import static enigma.content.EniPolymorphTypes.therma;
 import static enigma.content.EniUnits.scald;
 import static enigma.util.Consts.px;
@@ -40,10 +42,10 @@ public class EniBlocks {
 
 		incandescence,
 
-		suctionDrill,
-		encasedConveyor, axisGate, thermobaricLauncher,
+		vacuumDrill,
+		encasedConveyor, axisGate, filter, thermobaricLauncher,
 
-		polymorphNode, polymorphEnforcer, geothermalCollector,
+		polymorphNode, polymorphEnforcer, geothermalCollector, polymorphSource,
 		molybdenumWall, largeMolybdenumWall, gateway, thermoacousticSonar,
 		thermalCrystallizer,
 
@@ -207,8 +209,6 @@ public class EniBlocks {
 
 		wulfeniteBoulder = new Prop("wulfenite-boulder"){{
 			variants = 5;
-			requirements(Category.effect, with(molybdenum, 10));
-			placeablePlayer = false;
 
 			wulfenite.asFloor().decoration = this;
 			denseWulfenite.asFloor().decoration = this;
@@ -292,7 +292,7 @@ public class EniBlocks {
 		}};
 
 		//drills
-		suctionDrill = new PolymorphBurstDrill("suction-drill"){{
+		vacuumDrill = new PolymorphBurstDrill("vacuum-drill"){{
 			size = 2;
 			health = 1000;
 			requirements(Category.production, with(molybdenum, 20));
@@ -302,13 +302,19 @@ public class EniBlocks {
 			arrowColor = therma.color;
 			baseArrowColor = EniPal.outline;
 
-			consumedPower = new PolymorphPowerStack[]{new PolymorphPowerStack(therma, 37.5f/s)};
+			consumed = new PolymorphPowerStack(therma, 37.5f/s);
 			drillTime = 5*s;
 			hardnessDrillMultiplier = s;
 		}};
 
 		//distribution
-		encasedConveyor = new ShadedConveyor("encased-conveyor"){{
+		encasedConveyor = new ShadedConveyor("encased-conveyor"){
+			@Override
+			public void init(){
+				super.init();
+				junctionReplacement = filter;
+			}
+			{
 			health = 250;
 			requirements(Category.distribution, with(molybdenum, 1));
 			researchCost = with(molybdenum, 10);
@@ -321,6 +327,14 @@ public class EniBlocks {
 			health = 400;
 			requirements(Category.distribution, with(molybdenum, 5));
 			researchCost = with(molybdenum, 40);
+		}};
+
+		filter = new ItemFilter("filter"){{
+			size = 1;
+			health = 200;
+			requirements(Category.distribution, with(molybdenum, 8));
+			researchCost = with(molybdenum, 64);
+			squareSprite = false;
 		}};
 		thermobaricLauncher = new PolymorphMassDriver("thermobaric-launcher"){{
 			size = 2;
@@ -344,8 +358,7 @@ public class EniBlocks {
 			requirements(Category.power, with(molybdenum, 5));
 			researchCost = with(molybdenum, 25);
 
-			linkCount = 10;
-			linkDistance = 8;
+			linkRange = 16;
 		}};
 
 		polymorphEnforcer = new PolymorphEnforcer("polymorph-enforcer"){{
@@ -370,6 +383,12 @@ public class EniBlocks {
 				new DrawGlowRegion(){{ color = therma.color; suffix = "-glow"; }},
 				new DrawDefault()
 			);
+		}};
+
+		polymorphSource = new PolymorphSource("polymorph-source"){{
+			size = 1;
+			requirements(Category.power, with());
+			buildVisibility = BuildVisibility.sandboxOnly;
 		}};
 
 		//defense
@@ -414,7 +433,7 @@ public class EniBlocks {
 
 			craftTime = 1.5f*s;
 			consumeItem(periclase, 4);
-			consumedPower = new PolymorphPowerStack[]{new PolymorphPowerStack(therma, 225/s)};
+			consumed = new PolymorphPowerStack(therma, 225/s);
 
 			outputItem = new ItemStack(irtran, 3);
 
