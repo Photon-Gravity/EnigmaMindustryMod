@@ -34,6 +34,7 @@ public class PolymorphNode extends Block {
 	public PolymorphNode(String name) {
 		super(name);
 		update = true;
+		clipSize = (size + 2 * linkRange) * (tilesize + 2f);
 	}
 
 	@Override
