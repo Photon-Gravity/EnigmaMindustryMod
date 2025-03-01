@@ -484,6 +484,7 @@ public class EniBlocks {
 			unitType = EniUnits.pion;
 			alwaysUnlocked = true;
 			thrusterLength = 28 * px;
+			squareSprite = false;
 		}};
 	}
 }
