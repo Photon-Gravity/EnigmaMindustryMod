@@ -50,8 +50,11 @@ public class ItemPolymorphTurret extends ItemTurret {
 		public void update() {
 			super.update();
 
-			if(module == null){
+			if(module == null) {
 				module = new PolymorphModule(pos());
+
+			}
+			if(getModule().system == null){
 				PolymorphUpdater.makeSystem(pos());
 			}
 		}
