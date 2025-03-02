@@ -15,6 +15,7 @@ jobs:
       uses: actions/setup-java@v4
       with:
         java-version: 17
+        distribution: 'zulu'
     - name: Build mod jar
       run: ./gradlew deploy
     - name: Upload built jar file
