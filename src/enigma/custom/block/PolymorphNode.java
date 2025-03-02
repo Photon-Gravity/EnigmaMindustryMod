@@ -110,15 +110,15 @@ public class PolymorphNode extends Block {
 	}
 
 	public static float getBalanceFrom(Building entity){
-		return entity instanceof IPolymorphUtilizer util && util.getModule() != null && util.getModule().system != null ? util.getModule().system.balance() : 0;
+		return entity instanceof IPolymorphUtilizer util && util.getModule() != null && util.getModule().inSystem() ? util.getModule().firstSystemFor(util.getModule().getEnforced()).balance() : 0;
 	}
 
 	public static float getStoredFrom(Building entity){
-		return entity instanceof IPolymorphUtilizer util && util.getModule() != null && util.getModule().system != null ? util.getModule().system.stored() : 0;
+		return entity instanceof IPolymorphUtilizer util && util.getModule() != null && util.getModule().inSystem() ? util.getModule().firstSystemFor(util.getModule().getEnforced()).stored() : 0;
 	}
 
 	public static float getStorableFrom(Building entity){
-		return entity instanceof IPolymorphUtilizer util && util.getModule() != null && util.getModule().system != null ? util.getModule().system.storable() : 0;
+		return entity instanceof IPolymorphUtilizer util && util.getModule() != null && util.getModule().inSystem() ? util.getModule().firstSystemFor(util.getModule().getEnforced()).storable() : 0;
 	}
 
 	public static PolymorphPowerType getPolymorphFrom(Building entity){
@@ -136,7 +136,7 @@ public class PolymorphNode extends Block {
 				module = new PolymorphModule(pos());
 
 			}
-			if(getModule().system == null){
+			if(!getModule().inSystem()){
 				PolymorphUpdater.makeSystem(pos());
 			}
 

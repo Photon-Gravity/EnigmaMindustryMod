@@ -51,7 +51,7 @@ public class PolymorphSource extends Block {
 				module = new PolymorphModule(pos());
 
 			}
-			if(getModule().system == null){
+			if(!getModule().inSystem()){
 				PolymorphUpdater.makeSystem(pos());
 			}
 		}

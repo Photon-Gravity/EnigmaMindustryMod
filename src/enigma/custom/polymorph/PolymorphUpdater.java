@@ -41,9 +41,9 @@ public class PolymorphUpdater {
 
 		while(!schedule.isEmpty()){
 			int t = schedule.get(0);
-			if (Vars.world.build(t) instanceof IPolymorphUtilizer util && util.getModule().system != system){
-				util.getModule().system = system;
-				schedule.addAll(util.getModule().links);
+			if (Vars.world.build(t) instanceof IPolymorphUtilizer util && !util.getModule().inSystem(system)){
+				util.getModule().addToSystem(system);
+				schedule.addAll(util.getModule().getLinkedBlocks());
 				system.members.add(t);
 			}
 			schedule.remove(0);

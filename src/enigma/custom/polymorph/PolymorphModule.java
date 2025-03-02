@@ -6,7 +6,7 @@ import mindustry.Vars;
 public class PolymorphModule {
 	public Seq<Integer> links;
 
-	public PolymorphSystem system;
+	private PolymorphSystem system;
 
 	public int pos;
 
@@ -27,8 +27,8 @@ public class PolymorphModule {
 		links.add(other.pos);
 		other.links.add(pos);
 
-		if(other.system != system){
-			PolymorphUpdater.merge(system, other.system);
+		if(!other.inSystem(system)){
+			other.addToSystem(system);
 		}
 	}
 
@@ -44,7 +44,7 @@ public class PolymorphModule {
 
 			PolymorphUpdater.makeSystem(pos);
 
-			if(other.getModule().system != system) {
+			if(!other.getModule().inSystem(system)) {
 				PolymorphUpdater.makeSystem(otherPos);
 			}
 		} else {
@@ -53,6 +53,40 @@ public class PolymorphModule {
 
 			PolymorphUpdater.makeSystem(pos);
 		}
+	}
+
+	/**Adds the block to the specified system. WARNING: This does NOT update the links.*/
+	public void addToSystem(PolymorphSystem nsys){
+		if(this.system == null){
+			this.system = nsys;
+		} else {
+			PolymorphUpdater.merge(system, nsys);
+		}
+	}
+
+	public boolean inSystem(PolymorphSystem csys){
+		return this.system == csys;
+	}
+
+	public PolymorphSystem firstSystemFor(PolymorphPowerType type){
+		if(type == system.enforcedType){
+			return system;
+		}
+		return null;
+	}
+	public boolean inSystem(){
+		return this.system != null;
+	}
+	/**Removes the block from the specified system. WARNING: This does NOT update the system in any way, or the links.*/
+	public void removeFromSystem(PolymorphSystem rsys){
+		if(this.system == rsys) this.system = null;
+	}
+	public int systemsWithPowerType(PolymorphPowerType type){
+		return system.enforcedType == type ? 1 : 0;
+	}
+
+	public Seq<Integer> getLinkedBlocks(){
+		return links;
 	}
 
 	public PolymorphPowerType getEnforced(){

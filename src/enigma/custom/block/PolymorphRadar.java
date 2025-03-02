@@ -38,7 +38,7 @@ public class PolymorphRadar extends Radar {
 						((IPolymorphUtilizer)entity).getModule() != null &&((IPolymorphUtilizer)entity).getModule().getEnforced() != null ? ((IPolymorphUtilizer)entity).getModule().getEnforced().localizedName : "N/A"
 				),
 				() -> ((IPolymorphUtilizer)entity).getModule() != null &&((IPolymorphUtilizer)entity).getModule().getEnforced() != null ? ((IPolymorphUtilizer)entity).getModule().getEnforced().color : Color.gray,
-				() -> ((IPolymorphUtilizer)entity).getModule() != null && ((IPolymorphUtilizer)entity).getModule().system != null ? ((IPolymorphUtilizer)entity).getModule().system.satisfaction() : 0
+				() -> ((IPolymorphUtilizer)entity).getModule() != null && ((IPolymorphUtilizer)entity).getModule().inSystem() ? ((IPolymorphUtilizer)entity).getModule().satisfaction() : 0
 		);
 	}
 
@@ -54,7 +54,7 @@ public class PolymorphRadar extends Radar {
 				module = new PolymorphModule(pos());
 
 			}
-			if(getModule().system == null){
+			if(!getModule().inSystem()){
 				PolymorphUpdater.makeSystem(pos());
 			}
 		}

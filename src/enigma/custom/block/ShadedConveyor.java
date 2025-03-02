@@ -34,7 +34,7 @@ public class ShadedConveyor extends Conveyor {
 	@Override
 	public void drawPlanRegion(BuildPlan plan, Eachable<BuildPlan> list) {
 		super.drawPlanRegion(plan, list);
-		int[] bits = plan.x >= 0 && plan.y >= 0 && plan.x <= Vars.world.width() && plan.y <= Vars.world.height() ? buildBlending(Vars.world.tile(plan.x, plan.y), plan.rotation, null, true) : new int[]{0, 0, 0, 0};
+		int[] bits = plan.x >= 0 && plan.y >= 0 && plan.x < Vars.world.width() && plan.y < Vars.world.height() ? buildBlending(Vars.world.tile(plan.x, plan.y), plan.rotation, null, true) : new int[]{0, 0, 0, 0};
 		int blendbits = bits[0];
 		int blendsclx = bits[1];
 		int blendscly = bits[2];
@@ -56,7 +56,7 @@ public class ShadedConveyor extends Conveyor {
 		super.drawPlace(x, y, rotation, valid);
 
 		Draw.color();
-		int[] bits = x >= 0 && y >= 0 ? buildBlending(Vars.world.tile(x, y), rotation, null, true) : new int[]{0, 0, 0, 0};
+		int[] bits = x >= 0 && y >= 0 && x < Vars.world.width() && y < Vars.world.height()? buildBlending(Vars.world.tile(x, y), rotation, null, true) : new int[]{0, 0, 0, 0};
 		int blendbits = bits[0];
 		int blendsclx = bits[1];
 		int blendscly = bits[2];

@@ -47,7 +47,7 @@ public class PolymorphSystem {
 	public void delete(){
 		for(int member : members){
 			if(Vars.world.build(member) instanceof IPolymorphUtilizer util){
-				util.getModule().system = null;
+				util.getModule().removeFromSystem(this);
 			}
 		}
 

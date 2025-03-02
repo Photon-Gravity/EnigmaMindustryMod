@@ -44,7 +44,7 @@ public class PolymorphThermalGenerator extends ThermalGenerator {
 				module = new PolymorphModule(pos());
 
 			}
-			if(getModule().system == null){
+			if(!getModule().inSystem()){
 				PolymorphUpdater.makeSystem(pos());
 			}
 		}
