@@ -5,9 +5,6 @@
 
 version: 2
 updates:
-  - package-ecosystem: "" # See documentation for possible values
-
-    # Enable version updates for GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/" # Location of package manifests
     schedule:
