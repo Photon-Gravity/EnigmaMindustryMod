@@ -3,6 +3,7 @@ package enigma.custom.block;
 import arc.Core;
 import arc.func.Func;
 import arc.graphics.Color;
+import arc.math.Angles;
 import enigma.custom.polymorph.*;
 import enigma.custom.stats.EniStatVal;
 import enigma.custom.stats.EniStats;
@@ -38,7 +39,7 @@ public class ItemPolymorphTurret extends ItemTurret {
 						((IPolymorphUtilizer)entity).getModule() != null &&((IPolymorphUtilizer)entity).getModule().getEnforced() != null ? ((IPolymorphUtilizer)entity).getModule().getEnforced().localizedName : "N/A"
 				),
 				() -> ((IPolymorphUtilizer)entity).getModule() != null && ((IPolymorphUtilizer)entity).getModule().getEnforced() != null ? ((IPolymorphUtilizer)entity).getModule().getEnforced().color : Color.gray,
-				() -> ((IPolymorphUtilizer)entity).getModule() != null ? ((IPolymorphUtilizer)entity).getModule().satisfaction() : 0
+				() -> ((IPolymorphUtilizer)entity).getModule() != null ? ((IPolymorphUtilizer)entity).getModule().satisfaction(((ItemPolymorphTurret)entity.block).consumed.type) : 0
 		);
 	}
 
@@ -63,7 +64,8 @@ public class ItemPolymorphTurret extends ItemTurret {
 		public void updateEfficiencyMultiplier() {
 			super.updateEfficiencyMultiplier();
 
-			efficiency *= module != null ? module.satisfaction() : 0;
+			efficiency *= module != null ? module.satisfaction(consumed.type) : 0;
+			potentialEfficiency *= module != null ? module.satisfaction(consumed.type) : 0;
 		}
 
 		@Override
@@ -73,7 +75,7 @@ public class ItemPolymorphTurret extends ItemTurret {
 
 		@Override
 		public PolymorphPowerType enforced() {
-			return consumed.type;
+			return null;
 		}
 
 		@Override
@@ -83,7 +85,7 @@ public class ItemPolymorphTurret extends ItemTurret {
 
 		@Override
 		public float consumed(PolymorphPowerType ofType) {
-			return ofType == consumed.type ? consumed.quantity : 0;
+			return ofType == consumed.type && shouldConsume() ? consumed.quantity : 0;
 		}
 
 		@Override

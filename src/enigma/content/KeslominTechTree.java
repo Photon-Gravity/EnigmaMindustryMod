@@ -29,6 +29,9 @@ public class KeslominTechTree {
 			context().researchCostMultipliers = costMultipliers;
 
 			node(geothermalCollector, keslominSector, () -> {
+				node(thermoelectricAdapter, Seq.with(new Objectives.OnSector(subductionBarrier), new Objectives.Research(perforationDrill)), () -> {
+					node(evaporationDynamo, () -> {});
+				});
 				node(polymorphNode, () -> {
 					node(thermoacousticSonar, () -> {});
 					node(polymorphEnforcer, () -> {});
@@ -41,19 +44,37 @@ public class KeslominTechTree {
 				node(thermobaricLauncher, () -> {});
 			});
 
-			node(vacuumDrill, Seq.with(new Objectives.Research(geothermalCollector)), () -> {});
+			node(vacuumDrill, Seq.with(new Objectives.Research(geothermalCollector)), () -> {
+				node(perforationDrill, Seq.with(new Objectives.Research(ruthenium)), () -> {});
+			});
 
 			node(incandescence, Seq.with(new Objectives.Research(thermoacousticSonar)), () -> {
 				node(molybdenumWall, () -> {
 					node(largeMolybdenumWall, () -> {
 						node(gateway, Seq.with(new Objectives.Research(replicator)), () -> {});
 					});
+					node(rutheniumWall, () -> {
+						node(largeRutheniumWall, () -> {});
+					});
 				});
 			});
 
-			node(thermalCrystallizer, () -> {});
+			node(differentialPump, () ->{
+				node(enameledConduit, () -> {
+					node(enameledRouter, () -> {});
+					node(enameledJunction, () -> {
+						node(enameledBridge, () -> {});
+					});
+				});
+
+			});
+
+			node(thermalCrystallizer, () -> {
+				node(thermalDistiller, () -> {});
+			});
 			node(replicator, () -> {
 				node(scald, with(), () -> {});
+				node(needle, with(molybdenum, 100, ruthenium, 250), () -> {});
 			});
 
 			nodeProduce(molybdenum, () ->{
@@ -64,8 +85,11 @@ public class KeslominTechTree {
 							nodeProduce(caesium, () ->{});
 							nodeProduce(causticAmmonia, () ->{
 								nodeProduce(distilledAmmonia, () ->{
-									nodeProduce(deuteride, () ->{});
+									nodeProduce(oxidane, () ->{});
+									nodeProduce(nitrate, () ->{});
+									nodeProduce(nitroxide, () ->{});
 								});
+								nodeProduce(deuteride, () ->{});
 							});
 
 						});
@@ -73,12 +97,20 @@ public class KeslominTechTree {
 					});
 				});
 				nodeProduce(therma, () ->{
-					nodeProduce(ion, () ->{});
+					nodeProduce(ion, () ->{
+						nodeProduce(alkima, () ->{});
+						nodeProduce(enigma, () ->{});
+					});
+					nodeProduce(lux, () ->{});
 				});
 			});
 
 			node(interphase, () -> {
-				node(scattershot, Seq.with(new Objectives.SectorComplete(interphase)), () -> {});
+				node(scattershot, Seq.with(new Objectives.SectorComplete(interphase)), () -> {
+					node(subductionBarrier, Seq.with(new Objectives.SectorComplete(scattershot)), () -> {
+
+					});
+				});
 			});
 		});
 	}

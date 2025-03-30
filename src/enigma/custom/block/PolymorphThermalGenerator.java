@@ -8,6 +8,8 @@ import mindustry.gen.Building;
 import mindustry.ui.Bar;
 import mindustry.world.blocks.power.ThermalGenerator;
 
+import static enigma.util.Consts.s;
+
 public class PolymorphThermalGenerator extends ThermalGenerator {
 
 	public PolymorphPowerStack produced;
@@ -24,7 +26,8 @@ public class PolymorphThermalGenerator extends ThermalGenerator {
 	public static Func<Building, Bar> makePowerBalance(){
 		return entity -> new Bar(() ->
 				Core.bundle.format(
-						"bar.polymorphprod", //very dense notation that amounts to nullproofing
+						"bar.polymorphprov", //very dense notation that amounts to nullproofing
+						((PolymorphThermalBuild)entity).produced(((PolymorphThermalGenerator)entity.block).produced.type) * s,
 						((PolymorphThermalGenerator)entity.block).produced.type.localizedName
 				),
 				() -> ((PolymorphThermalGenerator)entity.block).produced.type.color,
@@ -60,7 +63,7 @@ public class PolymorphThermalGenerator extends ThermalGenerator {
 
 		@Override
 		public float produced(PolymorphPowerType ofType) {
-			return ofType == produced.type ? produced.quantity * sum : 0;
+			return ofType == produced.type ? produced.quantity * sum * efficiency : 0;
 		}
 
 		@Override

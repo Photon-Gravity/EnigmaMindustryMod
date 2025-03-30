@@ -43,7 +43,7 @@ public class PolymorphBurstDrill extends BurstDrill {
 						((IPolymorphUtilizer)entity).getModule() != null && ((IPolymorphUtilizer)entity).getModule().getEnforced() != null ? ((IPolymorphUtilizer)entity).getModule().getEnforced().localizedName : "N/A"
 				),
 				() -> ((IPolymorphUtilizer)entity).getModule() != null && ((IPolymorphUtilizer)entity).getModule().getEnforced() != null ? ((IPolymorphUtilizer)entity).getModule().getEnforced().color : Color.gray,
-				() -> ((IPolymorphUtilizer)entity).getModule() != null ? ((IPolymorphUtilizer)entity).getModule().satisfaction() : 0
+				() -> ((IPolymorphUtilizer)entity).getModule() != null ? ((IPolymorphUtilizer)entity).getModule().satisfaction(((PolymorphBurstDrill)entity.block).consumed.type) : 0
 		);
 	}
 
@@ -64,7 +64,7 @@ public class PolymorphBurstDrill extends BurstDrill {
 		arrowBlurRegions = new TextureRegion[arrows];
 
 		for(int i=0; i < arrows ;i++){
-			arrowRegions[i] = Core.atlas.find(name + "-arrow-" + i);
+			arrowRegions[i] = Core.atlas.find(name + "-arrow-" + (arrows-1-i));
 			arrowBlurRegions[i] = Core.atlas.find(name + "-arrow-blur-" + i);
 		}
 	}
@@ -90,7 +90,7 @@ public class PolymorphBurstDrill extends BurstDrill {
 		@Override
 		public void updateEfficiencyMultiplier() {
 			super.updateEfficiencyMultiplier();
-			efficiency *= module != null ? module.satisfaction() : 0;
+			efficiency *= module != null ? module.satisfaction(consumed.type) : 0;
 		}
 
 		@Override
@@ -144,7 +144,7 @@ public class PolymorphBurstDrill extends BurstDrill {
 
 		@Override
 		public PolymorphPowerType enforced() {
-			return consumed.type;
+			return null;
 		}
 
 		@Override

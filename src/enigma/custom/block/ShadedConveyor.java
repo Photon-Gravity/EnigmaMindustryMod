@@ -7,6 +7,7 @@ import arc.util.Eachable;
 import mindustry.Vars;
 import mindustry.entities.units.BuildPlan;
 import mindustry.gen.Building;
+import mindustry.graphics.Layer;
 import mindustry.type.Item;
 import mindustry.world.blocks.distribution.Conveyor;
 
@@ -71,6 +72,10 @@ public class ShadedConveyor extends Conveyor {
 				- (blendbits == 2  || blendbits == 4 ? 1 : 0)
 				+ (rotateTMerge ? 1 : 0) + 256) % 4], x*8, y*8);
 	}
+	@Override
+	public TextureRegion[] icons() {
+		return new TextureRegion[]{regions[0][0], overlay[0][0]};
+	}
 
 	public class ShadedConveyorBuild extends ConveyorBuild {
 		@Override
@@ -81,6 +86,9 @@ public class ShadedConveyor extends Conveyor {
 			boolean rotateYMerge = blendbits == 2 && (blendsclx * blendscly == -1);
 			boolean rotateTMerge = blendbits == 4;
 
+			float z = Draw.z();
+			Draw.z(Layer.block +0.05f);
+
 			Draw.rect(overlay[blendbits == 4 ? 2 : blendbits][(rotation
 					- (rotateCorner ? 1 : 0)
 					- (rotateYMerge ? 2 : 0)
@@ -90,7 +98,10 @@ public class ShadedConveyor extends Conveyor {
 			if(blendbits == 0 && nearby((rotation+2)%4) == null) Draw.rect(rotation == 0 || rotation == 3 ? cap1 : cap0, x, y, (rotation+2)%4 * 90);
 
 			if(nearby(rotation) == null) Draw.rect(rotation == 1 || rotation == 2 ? cap1 : cap0, x, y, rotation * 90);
+
+			Draw.z(z);
 		}
+
 
 		@Override
 		public void handleItem(Building source, Item item) {

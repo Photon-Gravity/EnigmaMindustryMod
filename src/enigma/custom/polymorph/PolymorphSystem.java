@@ -23,7 +23,7 @@ public class PolymorphSystem {
 	public void update(){
 		enforcedType = getEnforced();
 
-		if (Vars.state.isCampaign() && enforcedType != null && !enforcedType.unlocked()) enforcedType.unlock();
+		if (Vars.state.isCampaign() && members != null && members.size > 0 && Vars.world.build(members.get(0)) != null && Vars.world.build(members.get(0)).team == Vars.state.rules.defaultTeam && enforcedType != null && !enforcedType.unlocked()) enforcedType.unlock();
 
 		storePower(batteryDelta());
 

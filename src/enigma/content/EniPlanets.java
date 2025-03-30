@@ -6,6 +6,8 @@ import arc.util.noise.Simplex;
 import enigma.graphics.EniPal;
 import mindustry.content.Items;
 import mindustry.content.Planets;
+import mindustry.game.Schematic;
+import mindustry.game.Schematics;
 import mindustry.game.Team;
 import mindustry.graphics.g3d.HexMesh;
 import mindustry.graphics.g3d.HexSkyMesh;
@@ -43,15 +45,17 @@ public class EniPlanets {
 			generator = new PlanetGenerator() {
 				@Override
 				public float getHeight(Vec3 position) {
-					return Math.max(Simplex.noise3d(seed, 8, 0.7f, 1f/0.9f, 10f + position.x, 10f + position.y, 10f + position.z)*2 - 1, 0.7f)-0.2f;
+					float noise = Simplex.noise3d(seed, 8, 0.7f, 1f/1.1f, 10f + position.x, 10f + position.y, 10f + position.z);
+					return Math.max(-Math.abs(noise) + 0.3f, 0);
 				}
 
 				@Override
 				public Color getColor(Vec3 position) {
 					Block result = EniBlocks.ammoniaDeeper;
-					float h = Simplex.noise3d(seed, 8, 0.7f, 1f/0.9f, 10f + position.x, 10f + position.y, 10f + position.z);
+					float noise = Simplex.noise3d(seed, 8, 0.7f, 1f/1.1f, 10f + position.x, 10f + position.y, 10f + position.z);
+					float h = -Math.abs(noise) + 0.3f;
 
-					if(h > 0.7f){
+					if(h > 0f){
 						float variation = Simplex.noise3d(seed + 10, 8, 0.7f, 1f/0.7f, 10f + position.x, 10f + position.y, 10f + position.z);
 						if(variation > 0.5f){
 							result = EniBlocks.biotite;
@@ -60,33 +64,37 @@ public class EniPlanets {
 						} else {
 							result = EniBlocks.periclaseFloor;
 						}
-					} else if(h > 0.6f) {
+					} else if(h > -0.05f) {
 						result = EniBlocks.ammonia;
-					} else if(h > 0.5f) {
+					} else if(h > -0.1f) {
 						result = EniBlocks.ammoniaDeep;
 					}
 
 					return result.mapColor;
 				}
+				{
+					defaultLoadout = Schematics.readBase64("bXNjaAF4nGNgYWBhZmDJS8xNZeBKzi9Kzc1PKc1JZeBOSS1OLsosKMnMz2NgYGDLSUxKzSlmYIqOZWQQSs3LTM9N1AUp14WqZ2BgBCEgAQCLuxTc");
+				}
 			};
 			meshLoader = () -> new HexMesh(this, 5);
 			cloudMeshLoader = () -> new MultiMesh(
 					new HexSkyMesh(this, 7, 0.15f, 0.14f, 5, Color.valueOf("827f33").a(0.25f), 3, 0.42f, 1f, 0.43f),
-					new HexSkyMesh(this, 8, 0.4f, 0.15f, 5, Color.valueOf("989345").a(0.25f), 3, 0.42f, 1.1f, 0.44f),
 					new HexSkyMesh(this, 9, 0.6f, 0.16f, 5, Color.valueOf("b0a859").a(0.25f), 3, 0.42f, 1.2f, 0.45f)
 			);
 			alwaysUnlocked = true;
 			landCloudColor = Color.valueOf("b0a859");
 			atmosphereColor = Color.valueOf("b0a859");
 			defaultEnv = Env.terrestrial | Env.oxygen;
-			startSector = 81;
+			startSector = 13;
 			atmosphereRadIn = 0.02f;
 			atmosphereRadOut = 0.3f;
 			totalRadius += 2.6f;
 			lightSrcTo = 0.5f;
 			lightDstFrom = 0.2f;
 			clearSectorOnLose = true;
+
 			defaultCore = EniBlocks.coreModule;
+
 			iconColor = Color.valueOf("656520");
 			enemyBuildSpeedMultiplier = 0.4f;
 

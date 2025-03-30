@@ -16,11 +16,13 @@ public class EniItems {
 		irtran = new Item("irtran", EniPal.irtran);
 		ruthenium = new Item("ruthenium", Color.valueOf("733a4f"));
 		fulgoriteFiber = new Item("fulgorite-fiber", Color.valueOf("2b1d1d"));
-		caesium = new Item("caesium", Color.valueOf("733a4f"));
+		caesium = new Item("caesium", EniPal.caesium);
 
-		ruthenium.hidden = true;
+		molybdenum.hardness = 1;
+		periclase.hardness = 0;
+		ruthenium.hardness = 2;
+
 		fulgoriteFiber.hidden = true;
-		caesium.hidden = true;
 
 		keslominItems.addAll(molybdenum, periclase, irtran, ruthenium, fulgoriteFiber, caesium);
 	}

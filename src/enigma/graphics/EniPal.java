@@ -8,6 +8,9 @@ public class EniPal {
 		irtranLight = Color.valueOf("e2a8d8"),
 		irtran = Color.valueOf("9b68a1"),
 
+		caesiumLight = Color.valueOf("f0e494"),
+		caesium = Color.valueOf("b19a4f"),
+
 		outline = arc.graphics.Color.valueOf("141d23"),
 		blackbodyDark = Color.valueOf("ffb05f"),
 		redHotDark = Color.valueOf("ff0003"),

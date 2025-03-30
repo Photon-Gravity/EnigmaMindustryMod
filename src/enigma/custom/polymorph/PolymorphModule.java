@@ -74,6 +74,10 @@ public class PolymorphModule {
 		}
 		return null;
 	}
+
+	public PolymorphSystem firstSystem(){
+		return system;
+	}
 	public boolean inSystem(){
 		return this.system != null;
 	}
@@ -93,8 +97,8 @@ public class PolymorphModule {
 		return system != null ? system.enforcedType : null;
 	}
 
-	public float satisfaction(){
-		return system != null ? system.satisfaction() : 0;
+	public float satisfaction(PolymorphPowerType type){
+		return system != null && system.enforcedType == type && type != null ? system.satisfaction() : 0;
 	}
 
 	public boolean canConnect(PolymorphModule module){

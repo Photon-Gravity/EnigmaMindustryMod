@@ -3,6 +3,7 @@ package enigma;
 import arc.util.Log;
 import enigma.content.*;
 import enigma.custom.polymorph.PolymorphUpdater;
+import mindustry.game.Schematics;
 import mindustry.mod.Mod;
 
 public class EniMain extends Mod{

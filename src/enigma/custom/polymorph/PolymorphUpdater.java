@@ -44,7 +44,7 @@ public class PolymorphUpdater {
 			if (Vars.world.build(t) instanceof IPolymorphUtilizer util && !util.getModule().inSystem(system)){
 				util.getModule().addToSystem(system);
 				schedule.addAll(util.getModule().getLinkedBlocks());
-				system.members.add(t);
+				system.members.addUnique(t);
 			}
 			schedule.remove(0);
 		}

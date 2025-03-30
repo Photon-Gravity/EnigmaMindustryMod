@@ -10,6 +10,7 @@ import mindustry.gen.Building;
 import mindustry.ui.Bar;
 import mindustry.world.blocks.defense.Radar;
 import mindustry.world.blocks.units.UnitFactory;
+import mindustry.world.consumers.ConsumeItemDynamic;
 
 public class PolymorphFabricator extends UnitFactory {
 
@@ -38,7 +39,7 @@ public class PolymorphFabricator extends UnitFactory {
 						((IPolymorphUtilizer)entity).getModule() != null &&((IPolymorphUtilizer)entity).getModule().getEnforced() != null ? ((IPolymorphUtilizer)entity).getModule().getEnforced().localizedName : "N/A"
 				),
 				() -> ((IPolymorphUtilizer)entity).getModule() != null &&((IPolymorphUtilizer)entity).getModule().getEnforced() != null ? ((IPolymorphUtilizer)entity).getModule().getEnforced().color : Color.gray,
-				() -> ((IPolymorphUtilizer)entity).getModule() != null && ((IPolymorphUtilizer)entity).getModule().inSystem() ? ((IPolymorphUtilizer)entity).getModule().satisfaction() : 0
+				() -> ((IPolymorphUtilizer)entity).getModule() != null && ((IPolymorphUtilizer)entity).getModule().inSystem() ? ((IPolymorphUtilizer)entity).getModule().satisfaction(((PolymorphFabricator)entity.block).consumed.type) : 0
 		);
 	}
 
@@ -62,7 +63,7 @@ public class PolymorphFabricator extends UnitFactory {
 		public void updateEfficiencyMultiplier() {
 			super.updateEfficiencyMultiplier();
 
-			efficiency *= module != null ? module.satisfaction() : 0;
+			efficiency *= module != null ? module.satisfaction(consumed.type) : 0;
 		}
 
 		@Override
@@ -72,7 +73,7 @@ public class PolymorphFabricator extends UnitFactory {
 
 		@Override
 		public PolymorphPowerType enforced() {
-			return consumed.type;
+			return null;
 		}
 
 		@Override

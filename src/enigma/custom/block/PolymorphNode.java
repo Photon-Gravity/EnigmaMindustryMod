@@ -19,6 +19,7 @@ import mindustry.graphics.Pal;
 import mindustry.ui.Bar;
 import mindustry.world.Block;
 
+import static enigma.util.Consts.px;
 import static mindustry.Vars.tilesize;
 import static mindustry.Vars.world;
 
@@ -28,7 +29,7 @@ public class PolymorphNode extends Block {
 	public int linkRange = 8;
 
 	public float pulseScl = 7, pulseMag = 0.05f;
-	public float laserWidth = 0.4f;
+	public float laserWidth = 0.4f, laserOffset = 10 * px / tilesize;
 
 	TextureRegion laser, laserEnd, effectRegion;
 	public PolymorphNode(String name) {
@@ -94,7 +95,7 @@ public class PolymorphNode extends Block {
 						getPolymorphFrom(entity) != null ? getPolymorphFrom(entity).localizedName : "N/A"
 				),
 				() -> getPolymorphFrom(entity) != null ? getPolymorphFrom(entity).color : Color.gray,
-				() -> entity instanceof IPolymorphUtilizer util && util.getModule() != null ? util.getModule().satisfaction() : 0
+				() -> entity instanceof IPolymorphUtilizer util && util.getModule() != null ? util.getModule().satisfaction(util.getModule().getEnforced()) : 0
 		);
 	}
 
@@ -141,33 +142,37 @@ public class PolymorphNode extends Block {
 			}
 
 			if(module != null){
-				checkDirs();
+				for(int i=0; i <4 ; i++) {
+					checkDir(i);
+				}
 			}
 		}
 
-		public void checkDirs(){
-			for(int rot = 0; rot < 4; rot++) {
+		public void checkDir(int rot){
+			Building found = null;
 
-				Building found = null;
+			visualLinks[rot] = -1;
 
-				visualLinks[rot] = -1;
+			boolean hitInsulated = false;
 
-				for (int i = 1; i <= linkRange; i++) {
+			for (int i = 1; i <= linkRange; i++) {
 
-					Building b = Vars.world.build(tileX() + Geometry.d4x[rot] * i, tileY() + Geometry.d4y[rot] * i); //get next block
+				Building b = Vars.world.build(tileX() + Geometry.d4x[rot] * i, tileY() + Geometry.d4y[rot] * i); //get next block
 
-					if (found == null && b != null && getModule().links.contains(b.pos())){ //if the first found block is already linked, mark as found.
-						found = b;
-						visualLinks[rot] = i;
-					} else if (found == null && b instanceof IPolymorphUtilizer util && team == b.team && util.getModule() != null && util.getModule().canConnect(getModule()) && getModule().canConnect(util.getModule())) { //if first found is not in the system and the system is compatible with this one, link it
-						module.linkTo(util.getModule());
-						found = b;
-						visualLinks[rot] = i;
-					} else if (found != null && b != null && found.pos() != b.pos() && getModule().links.contains(b.pos())) { //if we've already found our link and a block behind it is still linked, unlink it.
-						getModule().unlinkFrom(b.pos());
-					}
+				if(found != null && found.isInsulated()){ //stop trying to connect if hit insulated block
+					hitInsulated = true;
+				} else if (!hitInsulated && found == null && b != null && getModule().links.contains(b.pos())){ //if the first found block is already linked, mark as found.
+					found = b;
+					visualLinks[rot] = i;
+				} else if (!hitInsulated && found == null && b instanceof IPolymorphUtilizer util && team == b.team && util.getModule() != null && util.getModule().canConnect(getModule()) && getModule().canConnect(util.getModule())) { //if first found is not in the system and the system is compatible with this one, link it
+					module.linkTo(util.getModule());
+					found = b;
+					visualLinks[rot] = i;
+				} else if (found != null && b != null && found.pos() != b.pos() && getModule().links.contains(b.pos())) { //if we've already found our link and a block behind it is still linked, unlink it.
+					getModule().unlinkFrom(b.pos());
 				}
 			}
+
 		}
 
 		@Override
@@ -193,7 +198,7 @@ public class PolymorphNode extends Block {
 					module.getEnforced().colorDark :
 					Color.black,
 
-					module != null  ? 1f - module.satisfaction() : 1f
+					module != null ? 1f - module.satisfaction(module.getEnforced()) : 1f
 			);
 
 			if(module != null && module.getEnforced() != null) Draw.rect(effectRegion, x, y);
@@ -214,7 +219,7 @@ public class PolymorphNode extends Block {
 
 					//don't draw lasers for adjacent blocks
 					if(link > 1 + size/2){
-						drawLaser(x, y, x + tilesize * Geometry.d4x(i) * link, y + tilesize * Geometry.d4y(i) * link, size, size, w);
+						drawLaser(x + tilesize * Geometry.d4x(i) * laserOffset, y +tilesize * Geometry.d4y(i) * laserOffset, x + tilesize * Geometry.d4x(i) * (link - laserOffset), y + tilesize * Geometry.d4y(i) * (link - laserOffset), size, size, w);
 					}
 				}
 			}

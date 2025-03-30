@@ -1,11 +1,16 @@
 package enigma.content;
 
+import arc.graphics.Color;
+import enigma.graphics.EFx;
 import enigma.graphics.EniPal;
-import mindustry.Vars;
-import mindustry.entities.bullet.ArtilleryBulletType;
+import mindustry.content.Fx;
+import mindustry.content.StatusEffects;
 import mindustry.entities.bullet.BasicBulletType;
+import mindustry.entities.bullet.BulletType;
+import mindustry.entities.bullet.LightningBulletType;
 import mindustry.gen.LegsUnit;
 import mindustry.gen.Sounds;
+import mindustry.gen.UnitEntity;
 import mindustry.gen.UnitWaterMove;
 import mindustry.graphics.Layer;
 import mindustry.type.UnitType;
@@ -16,8 +21,16 @@ import static enigma.util.Consts.s;
 
 public class EniUnits {
 	public static UnitType
-		pion, kaon,
-		scald, sear, evaporate, annihilate;
+		pion, kaon, nucleon,
+		scald, sear, vaporize, annul,
+		             enrage,
+
+		riot, revolt, resist, regicide,
+
+		needle, pike, javelin, glaive,
+
+
+		arrow, quiver;
 
 	public static void load(){
 		pion = new UnitType("pion"){{
@@ -33,7 +46,7 @@ public class EniUnits {
 			outlineColor = EniPal.outline;
 
 			mineSpeed = 6f;
-			mineTier = 1;
+			mineTier = 2;
 			buildSpeed = 1f;
 			itemCapacity = 50;
 			fogRadius = 0f;
@@ -62,7 +75,7 @@ public class EniUnits {
 
 		scald = new UnitType("scald"){{
 			targetAir = true;
-			speed = 0.9f;
+			speed = 1.20f;
 			drag = 0.12f;
 			hitSize = 53 * px;
 			armor = 2;
@@ -97,6 +110,119 @@ public class EniUnits {
 
 					backColor = trailColor = EniPal.irtran;
 					frontColor = EniPal.irtranLight;
+				}};
+			}});
+
+			//abilities.add(new LiquidSpeedBoostAbility());
+		}};
+
+		needle = new UnitType("needle"){{
+			targetAir = false;
+			speed = 1.5f;
+			accel = 0.08f;
+			drag = 0.04f;
+			hitSize = 46 * px;
+			health = 800;
+			faceTarget = false;
+			rotateSpeed = 4f;
+			constructor = UnitEntity::create;
+			outlineColor = EniPal.outline;
+			flying = true;
+			weapons.add(new Weapon(){{
+				mirror = false;
+				rotate = false;
+
+				reload = 0.5f * s;
+				shootCone = 180;
+				ejectEffect = Fx.none;
+				shootSound = Sounds.mineDeploy;
+				x = shootY = 0f;
+				bullet = new BasicBulletType(){{
+					sprite = "enigma-square";
+
+					lifetime = 1.5f * s;
+
+					hitEffect = EFx.needleDischarge;
+					shootEffect = Fx.none;
+					collidesTiles = false;
+					collides = false;
+					keepVelocity = false;
+					shrinkX = shrinkY = 0.5f;
+					width = height = 64 * px;
+
+					backColor = EniPolymorphTypes.ion.color;
+					frontColor = Color.white;
+
+					hitSound = Sounds.spark;
+
+					spin = 3f;
+
+					speed = 0f;
+					splashDamageRadius = 55f;
+					splashDamage = 100f;
+					collidesAir = false;
+
+					fragBullets = 3;
+					fragRandomSpread = 360;
+					fragBullet = new LightningBulletType(){{
+						lightningColor = hitColor = EniPolymorphTypes.ion.color;
+						lightningLength = 5;
+						lightningLengthRand = 7;
+
+						lightningType = new BulletType(0.0001f, 0f){{
+							lifetime = Fx.lightning.lifetime;
+							despawnEffect = Fx.none;
+							status = StatusEffects.shocked;
+							statusDuration = 10f;
+							hittable = false;
+							collidesTeam = true;
+						}};
+					}};
+				}};
+			}});
+		}};
+
+		arrow = new UnitType("arrow"){{
+			targetAir = true;
+			speed = 1.75f;
+			accel = 0.08f;
+			drag = 0.04f;
+			hitSize = 46 * px;
+			health = 900;
+			faceTarget = false;
+			rotateSpeed = 4f;
+			constructor = UnitEntity::create;
+			outlineColor = EniPal.outline;
+			flying = true;
+			maxRange = 1;
+			crashDamageMultiplier = 3f;
+
+			weapons.add(new Weapon(){{
+				mirror = false;
+				rotate = false;
+
+				shootOnDeath = true;
+
+				reload = 24f;
+				shootCone = 180f;
+				ejectEffect = Fx.none;
+				shootSound = Sounds.bang;
+				x = shootY = 0f;
+				bullet = new BulletType(){{
+					shootEffect = EFx.caesiumExplosionBig;
+					collidesTiles = false;
+					collides = false;
+					status = StatusEffects.blasted;
+
+					rangeOverride = 30f;
+					hitEffect = Fx.pulverize;
+					speed = 0f;
+					splashDamageRadius = 55f;
+					instantDisappear = true;
+					splashDamage = 200f;
+					killShooter = true;
+					hittable = false;
+					collidesAir = true;
 				}};
 			}});
 		}};

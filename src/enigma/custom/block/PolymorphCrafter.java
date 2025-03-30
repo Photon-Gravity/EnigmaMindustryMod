@@ -40,7 +40,7 @@ public class PolymorphCrafter extends GenericCrafter {
 						((IPolymorphUtilizer)entity).getModule() != null &&((IPolymorphUtilizer)entity).getModule().getEnforced() != null ? ((IPolymorphUtilizer)entity).getModule().getEnforced().localizedName : "N/A"
 				),
 				() -> ((IPolymorphUtilizer)entity).getModule() != null &&((IPolymorphUtilizer)entity).getModule().getEnforced() != null ? ((IPolymorphUtilizer)entity).getModule().getEnforced().color : Color.gray,
-				() -> ((IPolymorphUtilizer)entity).getModule() != null && ((IPolymorphUtilizer)entity).getModule().inSystem() ? ((IPolymorphUtilizer)entity).getModule().satisfaction() : 0
+				() -> ((IPolymorphUtilizer)entity).getModule() != null && ((IPolymorphUtilizer)entity).getModule().inSystem() ? ((IPolymorphUtilizer)entity).getModule().satisfaction(((PolymorphCrafter)entity.block).consumed.type) : 0
 		);
 	}
 
@@ -66,7 +66,7 @@ public class PolymorphCrafter extends GenericCrafter {
 		public void updateEfficiencyMultiplier() {
 			super.updateEfficiencyMultiplier();
 
-			efficiency *= module != null ? module.satisfaction() : 0;
+			efficiency *= module != null ? module.satisfaction(consumed.type) : 0;
 		}
 
 		@Override
@@ -76,7 +76,7 @@ public class PolymorphCrafter extends GenericCrafter {
 
 		@Override
 		public PolymorphPowerType enforced() {
-			return consumed.type;
+			return null;
 		}
 
 		@Override
@@ -86,7 +86,7 @@ public class PolymorphCrafter extends GenericCrafter {
 
 		@Override
 		public float consumed(PolymorphPowerType ofType) {
-			return ofType == consumed.type ? consumed.quantity : 0;
+			return ofType == consumed.type && shouldConsume() ? consumed.quantity : 0;
 		}
 
 		@Override

@@ -38,7 +38,7 @@ public class PolymorphRadar extends Radar {
 						((IPolymorphUtilizer)entity).getModule() != null &&((IPolymorphUtilizer)entity).getModule().getEnforced() != null ? ((IPolymorphUtilizer)entity).getModule().getEnforced().localizedName : "N/A"
 				),
 				() -> ((IPolymorphUtilizer)entity).getModule() != null &&((IPolymorphUtilizer)entity).getModule().getEnforced() != null ? ((IPolymorphUtilizer)entity).getModule().getEnforced().color : Color.gray,
-				() -> ((IPolymorphUtilizer)entity).getModule() != null && ((IPolymorphUtilizer)entity).getModule().inSystem() ? ((IPolymorphUtilizer)entity).getModule().satisfaction() : 0
+				() -> ((IPolymorphUtilizer)entity).getModule() != null && ((IPolymorphUtilizer)entity).getModule().inSystem() ? ((IPolymorphUtilizer)entity).getModule().satisfaction(((PolymorphRadar)entity.block).consumed.type) : 0
 		);
 	}
 
@@ -62,7 +62,7 @@ public class PolymorphRadar extends Radar {
 		public void updateEfficiencyMultiplier() {
 			super.updateEfficiencyMultiplier();
 
-			efficiency *= module != null ? module.satisfaction() : 0;
+			efficiency *= module != null ? module.satisfaction(consumed.type) : 0;
 		}
 
 		@Override
@@ -72,7 +72,7 @@ public class PolymorphRadar extends Radar {
 
 		@Override
 		public PolymorphPowerType enforced() {
-			return consumed.type;
+			return null;
 		}
 
 		@Override
